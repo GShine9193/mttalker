@@ -2,66 +2,51 @@ package com.mttalker.AudioController;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.os.AsyncTask;
+import android.media.MediaPlayer.OnPreparedListener;
 
-public class AudioPlayer extends AsyncTask <String, Void, Boolean> {
+import java.io.IOException;
+
+public class AudioPlayer implements OnPreparedListener {
 
     private MediaPlayer mediaPlayer;
     private ProgressDialog progressDialog;
 
-    public AudioPlayer(Context context) {
+    public AudioPlayer(Context context, int streamType) {
         mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
+        mediaPlayer.setAudioStreamType(streamType);
         progressDialog = new ProgressDialog(context);
     }
 
-    @Override
-    protected Boolean doInBackground(String... strings) {
-        Boolean prepared = false;
-
+    public void preparePlayer(String dataSource) {
         try {
-            System.out.println("@@@" + strings[0]);
-            mediaPlayer.setDataSource(strings[0]);
-            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mediaPlayer) {
-                    mediaPlayer.stop();
-                    mediaPlayer.reset();
-                }
-            });
+            mediaPlayer.setDataSource(dataSource);
+            mediaPlayer.prepareAsync();
+            mediaPlayer.setOnPreparedListener(this);
 
-            mediaPlayer.prepare();
-            prepared = true;
 
-        } catch (Exception e) {
-            System.out.println("MyAudioStreamingApp: " + e.getMessage());
+        } catch (IOException e) {
             e.printStackTrace();
-            prepared = false;
         }
-
-        return prepared;
     }
 
-
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
-        progressDialog.setMessage("Buffering...");
-        progressDialog.show();
+    public void play() {
+        if (!mediaPlayer.isPlaying()) {
+            mediaPlayer.start();
+        }
     }
 
-    @Override
-    protected void onPostExecute(Boolean aBoolean) {
-        super.onPostExecute(aBoolean);
-
-        if (progressDialog.isShowing()) {
-            progressDialog.cancel();
+    public void pause() {
+        if (mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
         }
+    }
 
-        mediaPlayer.start();
+    /*
+    * OnPreparedListener
+    */
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+
     }
 }

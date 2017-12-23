@@ -7,16 +7,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.mttalker.AudioController.AudioPlayer;
+import com.mttalker.AudioController.AudioRecorder;
 
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
     private Button btnPlay;
+    private Button btnRecord;
+    private EditText txtServer;
     private AudioPlayer audioPlayer;
-    private MediaPlayer mediaPlayer;
+    private AudioRecorder audioRecorder;
+    private TextView labelLocalIP;
 
 
     @Override
@@ -25,55 +31,32 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Setup
+        labelLocalIP = (TextView) findViewById(R.id.lableLocalIP);
+        txtServer = (EditText) findViewById(R.id.txtServerAddress);
+
+        audioPlayer = new AudioPlayer(this, AudioManager.STREAM_MUSIC);
+        audioRecorder = new AudioRecorder(this);
+
         btnPlay = (Button) findViewById(R.id.btnPlay);
-        final MainActivity weekThis = this;
-
-//        try {
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-//        audioPlayer = new AudioPlayer(weekThis);
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //audioPlayer.execute("http://192.168.1.106/Anh.mp3");
-
-//                if (mediaPlayer.isPlaying()) {
-//                    mediaPlayer.pause();
-//                } else {
-//                    mediaPlayer.start();
-//                }
-
-//            mediaPlayer.setDataSource("http://192.168.1.106/Anh.mp3");
-                try {
-                mediaPlayer.setDataSource("http://192.168.1.106/Anh.mp3");
-                mediaPlayer.prepare();
-                mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                    @Override
-                    public void onPrepared(MediaPlayer mp) {
-                        try {
-                            mp.start();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-
-                    }
-                });
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                audioPlayer.preparePlayer(txtServer.getText().toString());
+                audioPlayer.play();
             }
         });
 
-
-
+        btnRecord = (Button) findViewById(R.id.btnRecord);
+        btnRecord.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                audioRecorder.starRecording();
+            }
+        });
 
     }
 
-    private void onButtonPlayClicked() {
-
+    public void setLabelLocalIP(String newValue) {
+        labelLocalIP.setText(newValue);
     }
 }
