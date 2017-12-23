@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
 //            mediaPlayer.setDataSource("http://192.168.1.106/Anh.mp3");
                 try {
-                mediaPlayer.setDataSource("https://www.ssaurel.com/tmp/mymusic.mp3");
+                mediaPlayer.setDataSource("http://192.168.1.106/Anh.mp3");
                 mediaPlayer.prepare();
                 mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     @Override
